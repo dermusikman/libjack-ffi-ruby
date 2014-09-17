@@ -13,60 +13,68 @@
 
     You should have received a copy of the GNU General Public License
     along with libjack-ffi-ruby.  If not, see <http://www.gnu.org/licenses/>.
-=end    
+=end
 
 module JACK
   class Client
     extend FFI::Library
     ffi_lib LIB
-    
+
     attr_reader :pointer
-    
+
+    FLAGS_IS_INPUT     = 0x1
+    FLAGS_IS_OUTPUT    = 0x2
+    FLAGS_IS_PHYSICAL  = 0x4
+    FLAGS_CAN_MONITOR  = 0x8
+    FLAGS_IS_TERMINAL  = 0x10
+    JACK_DEFAULT_AUDIO = "32 bit float mono audio"
+    JACK_DEFAULT_MIDI  = "8 bit raw midi"
+
     def initialize(name, options = 0x00, &b)
       @name = name
       @options = options
-      
+
       status = FFI::MemoryPointer.new :pointer
-      
+
       @server = jack_client_open name, options, status
       # TODO return status handling
-      
+
       if block_given?
         yield self
         close
       end
-      
+
     end
 
     def close
       jack_client_close @server
     end
-    
+
     def get_ports
       # TODO checking if i am connected
       # TODO parameters
       jack_get_ports(@server, nil, nil, 0).read_array_of_string_until_end.collect{ |port| Port.new(port, self) }
     end
-    
+
     def port_by_name(name)
       port = jack_port_by_name(@server, name)
-      
+
       raise Errors::NoSuchPortError, "There no such port as #{name}" if port.null?
-      
+
       Port.new(port, self)
     end
-    
+
     def connect(source, destination)
       change_graph(:connect, source, destination) == 0
     end
-    
+
     def disconnect(source, destination)
       change_graph(:disconnect, source, destination) == 0
     end
 
     def change_graph(method, source, destination)
       raise ArgumentError, "You must pass JACK::Port or String to JACK::Client.port_connect" if not source.is_a? Port and not source.is_a? String and not destination.is_a? Port and not destination.is_a? String
-      
+
       source = port_by_name(source) if source.is_a? String
       destination = port_by_name(destination) if destination.is_a? String
 
@@ -80,8 +88,33 @@ module JACK
       end
 
       # TODO checking result
-      send("jack_#{method}", @server, source.name, destination.name)    
+      send("jack_#{method}", @server, source.name, destination.name)
     end
+
+    def register_midi_port(name, in_or_out)
+      register_port(name, JACK_DEFAULT_MIDI, in_or_out)
+    end
+
+    def register_audio(name, in_or_out)
+      register_port(name, JACK_DEFAULT_AUDIO, in_or_out)
+    end
+
+    def register_port(name, type, in_or_out)
+      case in_or_out
+      when :input
+        flags = FLAGS_IS_INPUT
+      when :output
+        flags = FLAGS_IS_OUTPUT
+      else
+        raise ArgumentError, "You must indicate :input or :output flag"
+      end
+      jack_port_register(@server, name, type, flags, 0)
+    end
+
+    def unregister_port(port)
+      jack_port_unregister(self, port)
+    end
+
 
     protected
 
@@ -131,7 +164,7 @@ module JACK
                      :server_name,     0x04,
                      :load_name,       0x08,
                      :load_init,       0x10 ]
-    
+
 =begin
   enum JackStatus {
 
@@ -209,7 +242,7 @@ module JACK
         */
        JackClientZombie = 0x1000
   };
-=end  
+=end
 
     enum :status, [ :failure,         0x01,
                     :invalid_option,  0x02,
@@ -262,7 +295,7 @@ module JACK
                                    jack_options_t options,
                                    jack_status_t *status, ...);
 
-=end                                 
+=end
     attach_function :jack_client_open, [:string, :options, :pointer], :pointer
 
 
@@ -278,13 +311,13 @@ module JACK
 
 =begin
   /**
-   * @param port_name_pattern A regular expression used to select 
-   * ports by name.  If NULL or of zero length, no selection based 
+   * @param port_name_pattern A regular expression used to select
+   * ports by name.  If NULL or of zero length, no selection based
    * on name will be carried out.
-   * @param type_name_pattern A regular expression used to select 
-   * ports by type.  If NULL or of zero length, no selection based 
+   * @param type_name_pattern A regular expression used to select
+   * ports by type.  If NULL or of zero length, no selection based
    * on type will be carried out.
-   * @param flags A value used to select ports by their flags.  
+   * @param flags A value used to select ports by their flags.
    * If zero, no selection based on flags will be carried out.
    *
    * @return a NULL-terminated array of ports that match the specified
@@ -293,9 +326,9 @@ module JACK
    *
    * @see jack_port_name_size(), jack_port_type_size()
    */
-  const char **jack_get_ports (jack_client_t *, 
-                               const char *port_name_pattern, 
-                               const char *type_name_pattern, 
+  const char **jack_get_ports (jack_client_t *,
+                               const char *port_name_pattern,
+                               const char *type_name_pattern,
                                unsigned long flags);
 
 =end
@@ -334,7 +367,7 @@ int jack_connect (jack_client_t *,
                   const char *source_port,
                   const char *destination_port);
 =end
-  attach_function :jack_connect, [:pointer, :string, :string], :int    
+  attach_function :jack_connect, [:pointer, :string, :string], :int
 
 =begin
 /**
@@ -355,7 +388,7 @@ int jack_disconnect (jack_client_t *,
                      const char *destination_port);
 =end
   attach_function :jack_disconnect, [:pointer, :string, :string], :int
-  
+
 =begin
 /**
  * Perform the same function as jack_disconnect() using port handles
@@ -369,6 +402,25 @@ int jack_disconnect (jack_client_t *,
 int jack_port_disconnect (jack_client_t *, jack_port_t *);
 =end
   attach_function :jack_port_disconnect, [:pointer, :pointer], :int
+
+=begin
+/**
+ * @return the @ref :jack_port_register
+jack_port_t *jack_port_register (jack_client_t *client,
+                                 const char *port_name,
+                                 const char *port_type,
+                                 unsigned long flags,
+                                 unsigned long buffer_size);
+=end
+      attach_function :jack_port_register, [:pointer, :string, :string, :ulong, :ulong], :pointer
+
+=begin
+/**
+ * @return status as int for unregistering jack_port_t
+ */
+int   jack_port_unregister (jack_client_t *, jack_port_t *)
+=end
+      attach_function :jack_port_unregister, [:pointer, :pointer], :int
 
   end
 end
