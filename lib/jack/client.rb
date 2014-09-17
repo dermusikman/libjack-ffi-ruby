@@ -112,7 +112,7 @@ module JACK
     end
 
     def unregister_port(port)
-      jack_port_unregister(self, port)
+      jack_port_unregister(@server, port)
     end
 
 
@@ -418,9 +418,25 @@ jack_port_t *jack_port_register (jack_client_t *client,
 /**
  * @return status as int for unregistering jack_port_t
  */
-int   jack_port_unregister (jack_client_t *, jack_port_t *)
+int jack_port_unregister (jack_client_t *, jack_port_t *)
 =end
       attach_function :jack_port_unregister, [:pointer, :pointer], :int
+
+=begin
+/**
+ * @return status as int for activating jack_client_t
+ #/
+int jack_activate (jack_client_t *client)
+=end
+      attach_function :jack_activate, [:pointer], :int
+
+=begin
+/**
+ * @return status as int for deactivating jack_client_t
+ #/
+int jack_deactivate (jack_client_t *client)
+=end
+      attach_function :jack_deactivate, [:pointer], :int
 
   end
 end
