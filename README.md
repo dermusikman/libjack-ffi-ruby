@@ -1,10 +1,11 @@
 Introduction
 ============
 
-This fork intends to add full MIDI functionality.
+This fork intends to 
 
-The end-goal is compatibility with [UniMIDI](https://github.com/arirusso/unimidi), but the greater goal (which is not that important to me, personally, is total JACK stack availability.
+1. add full MIDI functionality
+2. provide total JACK stack availability
 
-Ruby would be a great tool for tinkering with sound and MIDI.
+The primary goal is compatibility with [UniMIDI](https://github.com/arirusso/unimidi), but Ruby would be a great tool for tinkering with sound and MIDI both!
 
-I am modeling this after Ari Russo's ffi-coremidi, as it works.
+I am modeling this after Ari Russo's [ffi-coremidi](https://github.com/arirusso/ffi-coremidi), as it works, and is inherently compatible with UniMIDI.
