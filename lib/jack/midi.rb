@@ -14,10 +14,13 @@ module JACK
 
     attach_function :jack_midi_clear_buffer, [:buffer_out], :void
 
-    attach_function :jack_midi_event_reserve, [:buffer_out, :uint32, :int], :int
+    attach_function :jack_midi_event_reserve, [:buffer_out, :uint32, :size_t], :int
 
-    attach_function :jack_midi_event_write, [:buffer_out, :uint32, :string, :int], :int
+    attach_function :jack_midi_event_write, [:buffer_out, :uint32, :string, :size_t], :int
 
     attach_function :jack_midi_max_event_size, [:buffer_in], :int
+
+    attach_function :jack_midi_get_lost_event_count, [:buffer_inout], :uint32
+
   end
 end

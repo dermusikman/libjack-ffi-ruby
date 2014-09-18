@@ -52,4 +52,5 @@ end
 require_relative 'jack/errors'
 require_relative 'jack/client'
 require_relative 'jack/port'
+require_relative 'jack/midi'
 

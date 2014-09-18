@@ -7,9 +7,9 @@ begin
     gemspec.name = "jack-ffi"
     gemspec.summary = "JACK bindings via FFI"
     gemspec.description = "Jack Audio Connection Kit Bindings via FFI interface"
-    gemspec.email = "marcin@saepia.net"
-    gemspec.homepage = "http://jack-ffi.saepia.net"
-    gemspec.authors = ["Marcin Lewandowski"]
+    gemspec.email = "dermusikman@gmail.com"
+#    gemspec.homepage = "http://jack-ffi.saepia.net"
+    gemspec.authors = ["Marcin Lewandowski", "Jonathan Hadley"]
     
     gemspec.files = FileList['lib/**/*.rb', 'GPL3-LICENSE', 'Rakefile', 'VERSION']
     gemspec.add_dependency "ffi"    

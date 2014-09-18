@@ -72,6 +72,14 @@ module JACK
       change_graph(:disconnect, source, destination) == 0
     end
 
+    def activate
+      jack_activate(@server)
+    end
+
+    def deactivate
+      jack_deactivate(@server)
+    end
+
     def change_graph(method, source, destination)
       raise ArgumentError, "You must pass JACK::Port or String to JACK::Client.port_connect" if not source.is_a? Port and not source.is_a? String and not destination.is_a? Port and not destination.is_a? String
 
@@ -115,8 +123,15 @@ module JACK
       jack_port_unregister(@server, port)
     end
 
+    def sample_rate
+      jack_get_sample_rate(@server)
+    end
 
     protected
+
+    def get_buffer(nframes)
+      jack_get_port_buffer(@pointer, nframes)
+    end
 
 =begin
   enum JackOptions {
@@ -438,5 +453,9 @@ int jack_deactivate (jack_client_t *client)
 =end
       attach_function :jack_deactivate, [:pointer], :int
 
+      attach_function :jack_get_sample_rate, [:pointer], :uint32
+
+# void *jack_port_get_buffer (jack_port_t *port, jack_nframes_t num)
+      attach_function :jack_port_get_buffer, [:pointer, :uint32], :void
   end
 end

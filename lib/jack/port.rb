@@ -169,5 +169,6 @@ const char *jack_port_name (const jack_port_t *port);
 =end
       attach_function :jack_port_name, [:pointer], :string
 
+
   end
 end
