@@ -8,6 +8,9 @@ module JACK
     LIB = ["libjack.so.0.0.28", "libjack.so.0", "libjack.so", "libjack"]
     ffi_lib LIB
 
+# # # # #
+#  Client/Port management - really, just universally JACK
+#
     typedef :uint32,    :jack_nframes_t
     typedef :uint64,    :jack_time_t
     typedef :pointer,   :jack_port_t    # opaque struct, only accessed through API
@@ -80,6 +83,34 @@ module JACK
 
 # const char *       jack_port_name (const jack_port_t *port)
     attach_function :jack_port_name, [:jack_port_t], :string
+
+# # # # #
+#  MIDI types/events
+#
+    typedef   :jack_midi_data_t,  :uchar
+    class MIDIEvent < FFI::Struct
+      layout  :time,              :jack_nframes_t,
+              :size,              :size_t,
+              :buffer,            :jack_midi_data_t
+    end
+
+# int                jack_midi_event_get (jack_midi_event_t *event, void *port_buffer, uint32_t event_index)
+    attach_function :jack_midi_event_get, [MIDIEvent.by_ref, :buffer_in, :uint32], :int
+
+# void               jack_midi_clear_buffer (void *port_buffer)
+    attach_function :jack_midi_clear_buffer, [:buffer_inout], :void
+
+# jack_midi_data_t * jack_midi_event_reserve (void *port_buffer, jack_nframes_t time, size_t data_size)
+    attach_function :jack_midi_event_reserve, [:buffer_out, :jack_nframes_t, :size_t], :jack_midi_data_t
+
+# int                jack_midi_event_write (void *port_buffer, jack_nframes_t time, const jack_midi_data_t *data, size_t data_size)
+    attach_function :jack_midi_event_write, [:buffer_out, :jack_nframes_t, :string, :size_t], :int
+
+# size_t             jack_midi_max_event_size (void *port_buffer)
+    attach_function :jack_midi_max_event_size, [:buffer_in], :size_t
+
+# jack_nframes_t     jack_midi_get_event_count (void *port_buffer)
+    attach_function :jack_midi_get_lost_event_count, [:buffer_inout], :jack_nframes_t
 
   end
 end
