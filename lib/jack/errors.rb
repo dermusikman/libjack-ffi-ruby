@@ -13,13 +13,13 @@
 
     You should have received a copy of the GNU General Public License
     along with libjack-ffi-ruby.  If not, see <http://www.gnu.org/licenses/>.
-=end    
+=end
 
 module JACK
   class Errors
     class NoSuchPortError < Exception
     end
-    
+
     class InvalidPortsChosenToConnect < Exception
     end
   end

@@ -13,61 +13,61 @@
 
     You should have received a copy of the GNU General Public License
     along with libjack-ffi-ruby.  If not, see <http://www.gnu.org/licenses/>.
-=end    
+=end
 
 module JACK
   class Port
     extend FFI::Library
     ffi_lib LIB
-      
+
     attr_reader :pointer, :client
 
-    FLAGS_IS_INPUT    = 0x1
-    FLAGS_IS_OUTPUT   = 0x2
-    FLAGS_IS_PHYSICAL = 0x4
-    FLAGS_CAN_MONITOR = 0x8
-    FLAGS_IS_TERMINAL = 0x10
-    
+    FLAGS_IS_INPUT     = 0x1
+    FLAGS_IS_OUTPUT    = 0x2
+    FLAGS_IS_PHYSICAL  = 0x4
+    FLAGS_CAN_MONITOR  = 0x8
+    FLAGS_IS_TERMINAL  = 0x10
+
     def initialize(identifier, client)
       @client = client
-      
+
       if identifier.is_a? String
         @pointer = @client.port_by_name(identifier).pointer
       else
         @pointer = identifier
       end
     end
-    
+
     def name
       jack_port_name @pointer
     end
-    
+
     def flags
       jack_port_flags @pointer
     end
-    
+
     def connect(destination)
       raise ArgumentError, "You must pass JACK::Port or String to JACK::Port.connect" if not destination.is_a? Port and not destination.is_a? String
       destination = client.port_by_name(destination) if destination.is_a? String
-      
+
       client.connect self, destination
     end
-    
+
     def disconnect(destination)
       raise ArgumentError, "You must pass JACK::Port or String to JACK::Port.disconnect" if not destination.is_a? Port and not destination.is_a? String
       destination = client.port_by_name(destination) if destination.is_a? String
-      
+
       client.disconnect self, destination
     end
 
     def is_input?
       flags & FLAGS_IS_INPUT != 0
     end
-    
+
     def is_output?
       flags & FLAGS_IS_OUTPUT != 0
     end
-    
+
     def is_physical?
       flags & FLAGS_IS_PHYSICAL != 0
     end
@@ -79,16 +79,16 @@ module JACK
     def is_terminal?
       flags & FLAGS_IS_TERMINAL != 0
     end
-    
+
     def to_s
       name
     end
-    
+
     def inspect
       "#<#{self.class} name=#{name}>"
     end
-    
-  
+
+
     protected
 
 =begin
@@ -110,7 +110,7 @@ enum JackPortFlags {
       * if JackPortIsPhysical is set, then the port corresponds
       * to some kind of physical I/O connector.
       */
-     JackPortIsPhysical = 0x4, 
+     JackPortIsPhysical = 0x4,
 
      /**
       * if JackPortCanMonitor is set, then a call to
@@ -121,7 +121,7 @@ enum JackPortFlags {
       * that data that would be available from an output port (with
       * JackPortIsPhysical set) is sent to a physical output connector
       * as well, so that it can be heard/seen/whatever.
-      * 
+      *
       * Clients that do not control physical interfaces
       * should never create ports with this bit set.
       */
@@ -142,7 +142,7 @@ enum JackPortFlags {
       * their ports.
       */
      JackPortIsTerminal = 0x10
-};        
+};
 =end
       enum :flags, [ :is_input,    0x1,
                      :is_output,   0x2,
@@ -154,7 +154,7 @@ enum JackPortFlags {
  * @return the @ref JackPortFlags of the jack_port_t.
  */
 int jack_port_flags (const jack_port_t *port);
-=end    
+=end
 
       attach_function :jack_port_flags, [:pointer], :int
 
@@ -168,6 +168,6 @@ int jack_port_flags (const jack_port_t *port);
 const char *jack_port_name (const jack_port_t *port);
 =end
       attach_function :jack_port_name, [:pointer], :string
-    
+
   end
 end

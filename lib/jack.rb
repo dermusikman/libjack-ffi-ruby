@@ -1,6 +1,6 @@
 =begin
     libjack-ffi-ruby - JACK bindings for ruby via FFI interface
-    
+
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation, either version 3 of the License, or
@@ -13,10 +13,10 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-    
+
     Author: Marcin Lewandowski <marcin at saepia dot net>
-=end    
-    
+=end
+
 require 'ffi'
 
 module FFI
@@ -29,7 +29,7 @@ module FFI
         last = tmp.send(reader)
         break if last.null?
         ary << last
-        tmp += size 
+        tmp += size
       end
       ary
     end
@@ -45,11 +45,11 @@ module FFI
 end
 
 module JACK
-  LIB = [ "libjack.so.0.0.28", "libjack.so.0", "libjack.so", "libjack" ]  
+  LIB = [ "libjack.so.0.0.28", "libjack.so.0", "libjack.so", "libjack" ]
   VERSION = "0.0.1"
 end
 
-require 'jack/errors'
-require 'jack/client'
-require 'jack/port'
+require_relative 'jack/errors'
+require_relative 'jack/client'
+require_relative 'jack/port'
 
