@@ -52,36 +52,36 @@ module JACK
       :client_zombie,   0x1000
     ]
 
-# jack_client_t *    jack_client_open (const char *client_name,
+#    jack_client_t * jack_client_open (const char *client_name,
 #                                   jack_options_t options,
 #                                   jack_status_t *status,...)
     attach_function :jack_client_open, [:string, :options, :status], :jack_client_t
 
-# int                jack_client_close (jack_client_t *client)
+#                int jack_client_close (jack_client_t *client)
     attach_function :jack_client_close, [:jack_client_t], :int
 
-# const char **      jack_get_ports (jack_client_t *client,
+#      const char ** jack_get_ports (jack_client_t *client,
 #                                       const char *port_name_pattern,
 #                                       const char *type_name_pattern,
 #                                     unsigned long flags)
     attach_function :jack_get_ports, [:jack_client_t, :string, :string, :ulong], :pointer
 
-# jack_port_t *      jack_port_by_name (jack_client_t *, const char *port_name)
+#      jack_port_t * jack_port_by_name (jack_client_t *, const char *port_name)
     attach_function :jack_port_by_name, [:jack_client_t, :string], :jack_port_t
 
-# int                jack_connect (jack_client_t *, const char *source_port, const char *destination_port)
+#                int jack_connect (jack_client_t *, const char *source_port, const char *destination_port)
     attach_function :jack_connect, [:jack_client_t, :string, :string], :int
 
-# int                jack_disconnect (jack_client_t *, const char *source_port, const char *destination_port)
+#                int jack_disconnect (jack_client_t *, const char *source_port, const char *destination_port)
     attach_function :jack_disconnect, [:jack_client_t, :string, :string], :int
 
-# int                jack_port_disconnect (jack_client_t *, jack_port_t *)
+#                int jack_port_disconnect (jack_client_t *, jack_port_t *)
     attach_function :jack_port_disconnect, [:jack_client_t, :jack_port_t], :int
 
-# int                jack_port_flags (const jack_port_t *port)
+#                int jack_port_flags (const jack_port_t *port)
     attach_function :jack_port_flags, [:jack_port_t], :int
 
-# const char *       jack_port_name (const jack_port_t *port)
+#       const char * jack_port_name (const jack_port_t *port)
     attach_function :jack_port_name, [:jack_port_t], :string
 
 # # # # #
@@ -94,22 +94,22 @@ module JACK
               :buffer,            :jack_midi_data_t
     end
 
-# int                jack_midi_event_get (jack_midi_event_t *event, void *port_buffer, uint32_t event_index)
+#                int jack_midi_event_get (jack_midi_event_t *event, void *port_buffer, uint32_t event_index)
     attach_function :jack_midi_event_get, [MIDIEvent.by_ref, :buffer_in, :uint32], :int
 
-# void               jack_midi_clear_buffer (void *port_buffer)
+#               void jack_midi_clear_buffer (void *port_buffer)
     attach_function :jack_midi_clear_buffer, [:buffer_inout], :void
 
 # jack_midi_data_t * jack_midi_event_reserve (void *port_buffer, jack_nframes_t time, size_t data_size)
     attach_function :jack_midi_event_reserve, [:buffer_out, :jack_nframes_t, :size_t], :jack_midi_data_t
 
-# int                jack_midi_event_write (void *port_buffer, jack_nframes_t time, const jack_midi_data_t *data, size_t data_size)
+#                int jack_midi_event_write (void *port_buffer, jack_nframes_t time, const jack_midi_data_t *data, size_t data_size)
     attach_function :jack_midi_event_write, [:buffer_out, :jack_nframes_t, :string, :size_t], :int
 
-# size_t             jack_midi_max_event_size (void *port_buffer)
+#             size_t jack_midi_max_event_size (void *port_buffer)
     attach_function :jack_midi_max_event_size, [:buffer_in], :size_t
 
-# jack_nframes_t     jack_midi_get_event_count (void *port_buffer)
+#     jack_nframes_t jack_midi_get_event_count (void *port_buffer)
     attach_function :jack_midi_get_lost_event_count, [:buffer_inout], :jack_nframes_t
 
   end
