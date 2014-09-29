@@ -37,6 +37,7 @@ module JACK
     ]
 
     enum :status, [
+      :null_option,     0x00,
       :failure,         0x01,
       :invalid_option,  0x02,
       :name_not_unique, 0x04,
@@ -51,6 +52,9 @@ module JACK
       :backend_error,   0x800,
       :client_zombie,   0x1000
     ]
+
+    JACK_DEFAULT_AUDIO_TYPE = "32 bit float mono audio"
+    JACK_DEFAULT_MIDI_TYPE  = "8 bit raw midi"
 
 #    jack_client_t * jack_client_open (const char *client_name,
 #                                   jack_options_t options,
@@ -84,10 +88,27 @@ module JACK
 #       const char * jack_port_name (const jack_port_t *port)
     attach_function :jack_port_name, [:jack_port_t], :string
 
+#      jack_port_t * jack_port_register (jack_client_t *client,
+#                                          const char * port_name,
+#                                          const char * port_type,
+#                                         unsigned long flags,
+#                                         unsigned long buffer_size
+#                                       )
+    attach_function :jack_port_register, [:jack_client_t,
+                                          :string,
+                                          :string,
+                                          :port_flags,
+                                          :int           # Ignored for standard types
+                                         ], :jack_port_t
+
+#                int jack_port_unregister (jack_client_t *client, jack_port_t *port)
+    attach_function :jack_port_unregister, [:jack_client_t, :jack_port_t], :int
+
+
 # # # # #
 #  MIDI types/events
 #
-    typedef   :jack_midi_data_t,  :uchar
+    typedef   :uchar,             :jack_midi_data_t
     class MIDIEvent < FFI::Struct
       layout  :time,              :jack_nframes_t,
               :size,              :size_t,

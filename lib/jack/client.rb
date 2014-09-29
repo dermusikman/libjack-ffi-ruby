@@ -9,9 +9,9 @@ module JACK
       @name = name
       @options = options
 
-      status = FFI::MemoryPointer.new :pointer
+#      status = FFI::MemoryPointer.new :pointer
 
-      @server = API.jack_client_open name, options, status
+      @server = API.jack_client_open name, options, :null_option
       # TODO return status handling
 
       if block_given?
@@ -65,5 +65,10 @@ module JACK
       # TODO checking result
       send("jack_#{method}", @server, source.name, destination.name)
     end
+
+    def register_midi
+      MIDI.register(@server)
+    end
+
   end
 end
