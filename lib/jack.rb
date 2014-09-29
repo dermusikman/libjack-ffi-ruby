@@ -30,7 +30,8 @@ module JACK
   VERSION = "0.0.1"
 end
 
-require 'jack/errors'
-require 'jack/client'
-require 'jack/port'
-
+require_relative 'jack/api'
+require_relative 'jack/errors'
+require_relative 'jack/client'
+require_relative 'jack/port'
+require_relative 'jack/midi'
