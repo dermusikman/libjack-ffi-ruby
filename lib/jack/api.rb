@@ -9,7 +9,7 @@ module JACK
     ffi_lib LIB
 
 # # # # #
-#  Client/Port management - really, just universally JACK
+#  Client/Port management
 #
     typedef :uint32,    :jack_nframes_t
     typedef :uint64,    :jack_time_t
@@ -70,16 +70,16 @@ module JACK
 #                                     unsigned long flags)
     attach_function :jack_get_ports, [:jack_client_t, :string, :string, :ulong], :pointer
 
-#      jack_port_t * jack_port_by_name (jack_client_t *, const char *port_name)
+#      jack_port_t * jack_port_by_name (jack_client_t *client, const char *port_name)
     attach_function :jack_port_by_name, [:jack_client_t, :string], :jack_port_t
 
-#                int jack_connect (jack_client_t *, const char *source_port, const char *destination_port)
+#                int jack_connect (jack_client_t *client, const char *source_port, const char *destination_port)
     attach_function :jack_connect, [:jack_client_t, :string, :string], :int
 
-#                int jack_disconnect (jack_client_t *, const char *source_port, const char *destination_port)
+#                int jack_disconnect (jack_client_t *client, const char *source_port, const char *destination_port)
     attach_function :jack_disconnect, [:jack_client_t, :string, :string], :int
 
-#                int jack_port_disconnect (jack_client_t *, jack_port_t *)
+#                int jack_port_disconnect (jack_client_t *client, jack_port_t *)
     attach_function :jack_port_disconnect, [:jack_client_t, :jack_port_t], :int
 
 #                int jack_port_flags (const jack_port_t *port)
@@ -89,8 +89,8 @@ module JACK
     attach_function :jack_port_name, [:jack_port_t], :string
 
 #      jack_port_t * jack_port_register (jack_client_t *client,
-#                                          const char * port_name,
-#                                          const char * port_type,
+#                                          const char  *port_name,
+#                                          const char  *port_type,
 #                                         unsigned long flags,
 #                                         unsigned long buffer_size
 #                                       )
@@ -104,6 +104,27 @@ module JACK
 #                int jack_port_unregister (jack_client_t *client, jack_port_t *port)
     attach_function :jack_port_unregister, [:jack_client_t, :jack_port_t], :int
 
+#        typedef int(* JackProcessCallback)(jack_nframes_t nframes, void *arg)
+    callback        :process_callback, [:jack_nframes_t, :pointer], :int
+#                int jack_set_process_callback (jack_client_t *client, JackProcessCallback process_callback, void *arg)
+    attach_function :jack_set_process_callback, [:jack_client_t, :process_callback, :pointer], :int
+
+# # # # #
+# Transport/Timebase management
+#
+
+    typedef :pointer,   :jack_position_t
+
+    enum :transport_state, [
+      :stopped,
+      :rolling,
+      :looping,                         # deprecated
+      :starging
+    ]
+
+# jack_transport_state_t
+#                    jack_transport_query (const jack_client_t *client, jack_position_t *pos)
+    attach_function :jack_transport_state_t, [:jack_client_t, :jack_position_t], :transport_state
 
 # # # # #
 #  MIDI types/events
