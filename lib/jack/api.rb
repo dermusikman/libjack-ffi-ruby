@@ -124,7 +124,7 @@ module JACK
 
 # jack_transport_state_t
 #                    jack_transport_query (const jack_client_t *client, jack_position_t *pos)
-    attach_function :jack_transport_state_t, [:jack_client_t, :jack_position_t], :transport_state
+    attach_function :jack_transport_query, [:jack_client_t, :jack_position_t], :transport_state
 
 # # # # #
 #  MIDI types/events
