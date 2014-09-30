@@ -11,5 +11,15 @@ module JACK
       @@total_ports += 1
     end
 
+    def self.process_input(client, port, nframes)
+      if port.is_input?
+        buffer = API.jack_port_get_buffer(port, nframes)
+        API.jack_midi_clear_buffer(buffer)
+
+      else
+        raise "Output port provided to #process_input"
+      end
+    end
+
   end
 end
